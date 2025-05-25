@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LSTM IDS Packet Classifier</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Enter 8 Network Packet Features</h2>
+  <div id="form">
+    <label for="f1">Flow Duration</label><br>
+    <input type="number" id="f1" placeholder="Flow Duration"><br>
+    
+    <label for="f2">Tot Fwd Pkts</label><br>
+    <input type="number" id="f2" placeholder="Tot Fwd Pkts"><br>
+    
+    <label for="f3">Tot Bwd Pkts</label><br>
+    <input type="number" id="f3" placeholder="Tot Bwd Pkts"><br>
+    
+    <label for="f4">Pkt Len Mean</label><br>
+    <input type="number" id="f4" placeholder="Pkt Len Mean"><br>
+    
+    <label for="f5">Pkt Len Std</label><br>
+    <input type="number" id="f5" placeholder="Pkt Len Std"><br>
+    
+    <label for="f6">Flow IAT Mean</label><br>
+    <input type="number" id="f6" placeholder="Flow IAT Mean"><br>
+    
+    <label for="f7">Idle Mean</label><br>
+    <input type="number" id="f7" placeholder="Idle Mean"><br>
+    
+    <label for="f8">Idle Std</label><br>
+    <input type="number" id="f8" placeholder="Idle Std"><br>
+    
+    <button onclick="sendData()">Check Anomaly</button>
+  </div>
+  <h3 id="result"></h3>
+
+  <script src="script.js"></script>
+</body>
+</html>
