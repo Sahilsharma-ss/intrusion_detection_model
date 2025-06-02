@@ -1,5 +1,7 @@
 # LSTM-based Intrusion Detection System (IDS) with Flask and Frontend GUI
 
+web link : https://sahilsharma-ss.github.io/intrusion_detection_model/
+
 This project implements a machine learning-based Intrusion Detection System (IDS) using **Long Short-Term Memory (LSTM)** for anomaly detection, deployed with a **Flask** backend and a simple **HTML/CSS/JavaScript** frontend for user interaction. The backend serves the machine learning model, and the frontend provides an intuitive interface to input feature values and get anomaly predictions.
 
 ---
