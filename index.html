@@ -1,39 +1,134 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>LSTM IDS Packet Classifier</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LSTM Intrusion Detection System</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>Enter 8 Network Packet Features</h2>
-  <div id="form">
-    <label for="f1">Flow Duration</label><br>
-    <input type="number" id="f1" placeholder="Flow Duration"><br>
-    
-    <label for="f2">Tot Fwd Pkts</label><br>
-    <input type="number" id="f2" placeholder="Tot Fwd Pkts"><br>
-    
-    <label for="f3">Tot Bwd Pkts</label><br>
-    <input type="number" id="f3" placeholder="Tot Bwd Pkts"><br>
-    
-    <label for="f4">Pkt Len Mean</label><br>
-    <input type="number" id="f4" placeholder="Pkt Len Mean"><br>
-    
-    <label for="f5">Pkt Len Std</label><br>
-    <input type="number" id="f5" placeholder="Pkt Len Std"><br>
-    
-    <label for="f6">Flow IAT Mean</label><br>
-    <input type="number" id="f6" placeholder="Flow IAT Mean"><br>
-    
-    <label for="f7">Idle Mean</label><br>
-    <input type="number" id="f7" placeholder="Idle Mean"><br>
-    
-    <label for="f8">Idle Std</label><br>
-    <input type="number" id="f8" placeholder="Idle Std"><br>
-    
-    <button onclick="sendData()">Check Anomaly</button>
-  </div>
-  <h3 id="result"></h3>
+
+  <!-- Header / Hero -->
+  <header class="hero">
+    <div class="hero-icon">🛡️</div>
+    <h1>Network Intrusion Detection System</h1>
+    <p class="hero-subtitle">Powered by a deep-learning LSTM model trained on real network traffic data</p>
+  </header>
+
+  <!-- How it works -->
+  <section class="info-banner">
+    <div class="info-card">
+      <span class="info-icon">📡</span>
+      <div>
+        <strong>What this tool does</strong>
+        <p>Analyses 8 statistical features extracted from a network flow and classifies it as <em>Normal</em> traffic or an <em>Anomaly</em> (potential intrusion).</p>
+      </div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">🤖</span>
+      <div>
+        <strong>How the model works</strong>
+        <p>Your input is fed into a trained LSTM neural network. The model outputs a probability score — values above 0.5 are flagged as anomalies.</p>
+      </div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">⚠️</span>
+      <div>
+        <strong>When to use it</strong>
+        <p>Paste feature values captured from a network monitoring tool (e.g. CICFlowMeter) to quickly check whether a flow looks suspicious.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature input form -->
+  <main>
+    <div class="form-card">
+      <h2 class="form-title">Enter Network Flow Features</h2>
+      <p class="form-desc">Fill in all 8 fields below with values from your network capture, then click <strong>Analyse Traffic</strong>.</p>
+
+      <div class="fields-grid">
+
+        <div class="field-group">
+          <label for="f1">Flow Duration <span class="badge">µs</span></label>
+          <p class="field-desc">Total duration of the network flow in microseconds — from the first to the last packet.</p>
+          <input type="number" id="f1" placeholder="e.g. 120000" step="any">
+        </div>
+
+        <div class="field-group">
+          <label for="f2">Total Forward Packets</label>
+          <p class="field-desc">Number of packets sent in the forward direction (from client to server).</p>
+          <input type="number" id="f2" placeholder="e.g. 10" step="any">
+        </div>
+
+        <div class="field-group">
+          <label for="f3">Total Backward Packets</label>
+          <p class="field-desc">Number of packets sent in the backward direction (from server back to client).</p>
+          <input type="number" id="f3" placeholder="e.g. 8" step="any">
+        </div>
+
+        <div class="field-group">
+          <label for="f4">Packet Length Mean <span class="badge">bytes</span></label>
+          <p class="field-desc">Average size of all packets in this flow, measured in bytes.</p>
+          <input type="number" id="f4" placeholder="e.g. 512" step="any">
+        </div>
+
+        <div class="field-group">
+          <label for="f5">Packet Length Std <span class="badge">bytes</span></label>
+          <p class="field-desc">Standard deviation of packet sizes — high values indicate irregular packet sizes, a common attack indicator.</p>
+          <input type="number" id="f5" placeholder="e.g. 120" step="any">
+        </div>
+
+        <div class="field-group">
+          <label for="f6">Flow Inter-Arrival Time Mean <span class="badge">µs</span></label>
+          <p class="field-desc">Average time between consecutive packets in the flow. Very low values can suggest flood attacks.</p>
+          <input type="number" id="f6" placeholder="e.g. 5000" step="any">
+        </div>
+
+        <div class="field-group">
+          <label for="f7">Idle Mean <span class="badge">µs</span></label>
+          <p class="field-desc">Mean idle time — periods when no packets were sent. Helps distinguish bursty from continuous traffic.</p>
+          <input type="number" id="f7" placeholder="e.g. 300000" step="any">
+        </div>
+
+        <div class="field-group">
+          <label for="f8">Idle Std <span class="badge">µs</span></label>
+          <p class="field-desc">Standard deviation of idle times. High variance can indicate evasion techniques used by attackers.</p>
+          <input type="number" id="f8" placeholder="e.g. 15000" step="any">
+        </div>
+
+      </div><!-- /.fields-grid -->
+
+      <button id="analyseBtn" onclick="sendData()">
+        <span id="btnText">🔍 Analyse Traffic</span>
+        <span id="btnLoader" class="hidden">⏳ Analysing…</span>
+      </button>
+    </div><!-- /.form-card -->
+
+    <!-- Result panel -->
+    <div id="resultPanel" class="result-panel hidden">
+      <div id="resultIcon" class="result-icon"></div>
+      <h3 id="resultTitle" class="result-title"></h3>
+      <p id="resultDetail" class="result-detail"></p>
+      <div class="prob-bar-wrapper">
+        <span class="prob-label">Anomaly probability</span>
+        <div class="prob-bar-track">
+          <div id="probBar" class="prob-bar"></div>
+        </div>
+        <span id="probValue" class="prob-value"></span>
+      </div>
+    </div>
+
+    <!-- Error panel -->
+    <div id="errorPanel" class="error-panel hidden">
+      <span class="error-icon">❌</span>
+      <p id="errorMsg"></p>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>LSTM IDS &mdash; deep-learning based network intrusion detection &bull; Model trained on CIC-IDS-2017 dataset</p>
+  </footer>
 
   <script src="script.js"></script>
 </body>
